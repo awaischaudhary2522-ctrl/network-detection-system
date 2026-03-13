@@ -16,9 +16,9 @@ network-detection-system/
 │   ├── scanner.py   # Handles the network scan
 │   ├── api.py       # Flask REST API routes
 │   ├── database.py  # All CRUD operations
-│   └── models.py
+│   └── models.py    # In progress
 ├── schema.sql       # Database made here
-└── main.py
+└── main.py          # In progress
 
 ## API Endpoints
 | Endpoint | Description |
@@ -34,4 +34,7 @@ network-detection-system/
 2. Create the database and run schema:
    - createdb network_monitor
    - psql -U postgres -d network_monitor -f schema.sql
-3. Run: python main.py
+3. Run: python main.py (Working on it)
+
+## Status
+🚧 In Progress — backend mostly completed, frontend is under development.
