@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NetworkDetectionUI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+64d8039a5b333557eb4045ace1fa11c931623d2d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4792e4083348c0049a0e2877a7c60d7be7732bb1")]
 [assembly: System.Reflection.AssemblyProductAttribute("NetworkDetectionUI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NetworkDetectionUI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

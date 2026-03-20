@@ -8,7 +8,7 @@
         x:Class="NetworkDetectionUI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="NetworkDetectionUI">
+        Title="SecureNet">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -19,35 +19,43 @@
     <TabControl>
         <TabItem Header="Scan">
             <StackPanel Spacing="10" Margin="20">
-                <TextBox Text="{Binding IpInput}" Watermark="Enter IP range e.g. 192.168.1.0/24" KeyDown="OnKeyDown"/>
-                <Button Height="40" HorizontalAlignment="Left" Command="{Binding StartScanCommand}">Start Scan</Button>
-                <TextBlock Text="{Binding ScanStatus}"/>
+                <TextBlock Text="🛡️ SecureNet" FontSize="24" FontWeight="Bold" Margin="0,10,0,5"/>                <TextBlock Text="Enter an IP range below to scan your network for devices and threats." Opacity="0.7"/>
+                <TextBox Text="{Binding IpInput}" Watermark="Enter IP range e.g. 192.168.1.0/24" Margin="0,10,0,0"/>
+                <Button Height="40" HorizontalAlignment="Left" Command="{Binding StartScanCommand}" Width="150">Start Scan 🔍</Button>
+                <TextBlock Text="{Binding ScanStatus}" Margin="0,5,0,0"/>
+                <TextBlock Text="🔍 Scan your network | 🛡️ Detect threats | 📊 Monitor devices"
+                           Opacity="0.5"
+                           Margin="0,20,0,0"
+                           FontSize="12"/>
             </StackPanel>
         </TabItem>
         <TabItem Header="Devices">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="10" Margin="10">
-                    <Button Command="{Binding ShowCurrentScanCommand}">Current Scan</Button>
-                    <Button Command="{Binding ShowAllDevicesCommand}">View All</Button>
+                    <Button Width="120" Margin="0,0,5,0" Command="{Binding ShowCurrentScanCommand}">Current Scan</Button>
+                    <Button Width="120" Command="{Binding ShowAllDevicesCommand}">View All</Button>
                 </StackPanel>
+                <TextBox Text="{Binding DeviceSearch}" Watermark="Search by IP or hostname "/>
                 <DataGrid ItemsSource="{Binding DisplayedDevices}" AutoGenerateColumns="True" IsReadOnly="True"/>
             </StackPanel>
         </TabItem>
         <TabItem Header="Ports">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="10" Margin="10">
-                    <Button Command="{Binding ShowCurrentScanPortsCommand}">Current Scan</Button>
-                    <Button Command="{Binding ShowAllPortsCommand}">View All</Button>
+                    <Button Width="120" Margin="0,0,5,0" Command="{Binding ShowCurrentScanPortsCommand}">Current Scan</Button>
+                    <Button Width="120" Command="{Binding ShowAllPortsCommand}">View All</Button>
                 </StackPanel>
+                <TextBox Text="{Binding PortSearch}" Watermark="Search by port or service "/>
                 <DataGrid ItemsSource="{Binding DisplayedScanPorts}" AutoGenerateColumns="True" IsReadOnly="True"/>
             </StackPanel>
         </TabItem>
         <TabItem Header="Alerts">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="10" Margin="10">
-                    <Button Command="{Binding ShowCurrentScanAlertsCommand}">Current Scan</Button>
-                    <Button Command="{Binding ShowAllAlertsCommand}">View All</Button>
+                    <Button Width="120" Margin="0,0,5,0" Command="{Binding ShowCurrentScanAlertsCommand}">Current Scan</Button>
+                    <Button Width="120" Command="{Binding ShowAllAlertsCommand}">View All</Button>
                 </StackPanel>
+                <TextBox Text="{Binding AlertSearch}" Watermark="Search by alert type or IP "/>
                 <DataGrid ItemsSource="{Binding DisplayedAlerts}" AutoGenerateColumns="True" IsReadOnly="True"/>
             </StackPanel>
         </TabItem>

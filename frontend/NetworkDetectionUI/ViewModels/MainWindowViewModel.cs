@@ -40,6 +40,13 @@ public partial class MainWindowViewModel : ViewModelBase
     private bool _showingCurrentScan = false;
     [ObservableProperty]
     private List<Devices> _displayedDevices = new List<Devices>();
+    [ObservableProperty]
+    private string _deviceSearch = string.Empty;
+    [ObservableProperty]
+    private string _portSearch = string.Empty;
+
+    [ObservableProperty]
+    private string _alertSearch = string.Empty;
     private ApiService _apiService = new ApiService();
 
     public MainWindowViewModel()
@@ -127,11 +134,9 @@ public partial class MainWindowViewModel : ViewModelBase
             DisplayedDevices = CurrentScanDevices;
             CurrentScanPorts = result.Ports;
             DisplayedScanPorts = CurrentScanPorts;
-            // ... scan happens ...
             await LoadAlerts();
             CurrentScanAlerts = Alerts.Skip(alertsBefore).ToList();
             DisplayedAlerts = CurrentScanAlerts;
-            // Ports = result.Ports;
             await LoadDevices();
             await LoadPorts();
             await LoadScans();
@@ -188,4 +193,28 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         DisplayedAlerts = Alerts;
     }
+
+    partial void OnDeviceSearchChanged(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            DisplayedDevices = Devices;
+        else
+            DisplayedDevices = Devices.Where(d => d.IpAddress.Contains(value) || d.Hostname.Contains(value)).ToList();
+    }
+    partial void OnPortSearchChanged(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            DisplayedScanPorts = CurrentScanPorts;
+        else
+            DisplayedScanPorts = CurrentScanPorts.Where(p => p.ServiceName.Contains(value) || p.PortNumber.ToString().Contains(value)).ToList();
+    }
+
+    partial void OnAlertSearchChanged(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            DisplayedAlerts = Alerts;
+        else
+            DisplayedAlerts = Alerts.Where(a => a.AlertType.Contains(value) || a.SourceIp.Contains(value)).ToList();
+    }
+
 }
