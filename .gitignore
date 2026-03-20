@@ -1,2 +1,4 @@
-__pycache__/
+frontend/NetworkDetectionUI/bin/
+frontend/NetworkDetectionUI/obj/
+backend/__pycache__/
 *.pyc
