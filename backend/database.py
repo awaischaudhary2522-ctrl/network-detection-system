@@ -142,3 +142,52 @@ def read_ports():
     cur.close()
     conn.close()
     return results
+
+
+def get_ports_by_scan(scan_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM ports WHERE scan_id =%s", (scan_id,))
+    results = cur.fetchall()
+    cur.close()
+    conn.close()
+    return results
+
+
+def get_recent_scans(hours):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT COUNT(*) FROM scans WHERE scanned_at > NOW() - INTERVAL '%s mins'", (hours,))
+    results = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+    return results
+
+
+def get_device_ip(device_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT ip_address FROM devices WHERE id = %s", (device_id,))
+    results = cur.fetchone()[0]
+    cur.close()
+    conn.close()
+    return results
+
+
+def get_all_scan_features():
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""SELECT scan_id, COUNT(*) as port_count,
+                 COUNT(DISTINCT device_id) as device_count,
+                SUM(CASE WHEN port_number IN (21,23,445,3389,8000) THEN 1 ELSE 0 END) as suspicious_count
+                FROM ports 
+                GROUP BY scan_id""")
+    results = cur.fetchall()
+    cur.close()
+    conn.close()
+    return results
+
+# if __name__ == '__main__':
+#     print(get_all_scan_features())

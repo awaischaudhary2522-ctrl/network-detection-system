@@ -1,9 +1,12 @@
 # Importing Flask and Data from database.py
 
 from flask import Flask, jsonify
-from database import read_devices, read_ports, read_alerts, read_scans, read_logs
+from database import read_devices, read_ports, read_alerts, read_scans, read_logs, insert_logs
 from flask import request
 from scanner import NetworkScanner
+from detector import ThreatDetector
+from datetime import datetime
+
 
 app = Flask(__name__)
 
@@ -18,13 +21,19 @@ def scan():
     if not ip:
         return jsonify({'error': 'Please provide an IP address'})
     network = NetworkScanner(ip)
+    insert_logs(f"Scan started for {ip}", datetime.now())
     network.scan()
     network.save_scans()
     network.save_devices()
     network.save_ports()
+    detector = ThreatDetector(network.scan_id)
+    detector.master_detection()
+    insert_logs(f"Scan completed for {ip}", datetime.now())
+    return jsonify({
+        'devices': network.devices,
+        'ports': network.ports
 
-    return jsonify(network.devices, network.ports)
-
+    })
 
 # Devices Route
 
@@ -96,6 +105,20 @@ def logs():
             'created_at': row[2],
         })
 
+    return jsonify(results)
+
+# Scans Route
+
+
+@app.route('/scans')
+def scans():
+    results = []
+    for row in read_scans():
+        results.append({
+            'id': row[0],
+            'subnet_scanned': row[1],
+            'scanned_at': row[2]
+        })
     return jsonify(results)
 
 

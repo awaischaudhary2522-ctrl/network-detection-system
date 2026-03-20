@@ -14,7 +14,7 @@ class NetworkScanner:
 
 # To Scan the IP's that are given to us
 
-    def scan(self, ports='1-1024'):
+    def scan(self, ports='1-8000'):
         nm = nmap.PortScanner()
         result = nm.scan(self.IP, ports)
 
@@ -24,36 +24,34 @@ class NetworkScanner:
             now = datetime.now()
             first_seen = now
             last_seen = now
-            self.devices.append({'ip': ip, 'hostname': hostname,
-                                'first_seen': first_seen, 'last_seen': last_seen})
+            self.devices.append({'ip_address': ip, 'hostname': hostname,
+                                'first_seen': str(now), 'last_seen': str(now)})
 
             if 'tcp' in result['scan'][host]:
                 for port in result['scan'][host]['tcp']:
                     portname = result['scan'][host]['tcp'][port]['name']
                     protocol = 'tcp'
                     self.ports.append(
-                        {'ip': ip, 'port_number': port, 'service_name': portname, 'protocol': protocol})
+                        {'ip_address': ip, 'port_number': port, 'service_name': portname, 'protocol': protocol})
         return self.devices, self.ports
 
 
 # To save the devices info that we get from Scan()
 
-
     def save_devices(self):
         for data in self.devices:
-            device_id = insert_devices(data['ip'], data['hostname'],
+            device_id = insert_devices(data['ip_address'], data['hostname'],
                                        data['first_seen'], data['last_seen'])
-            data['device_id'] = device_id
+            data['id'] = device_id
 
 
 # To save the ports and its info that we get from Scan()
 
-
     def save_ports(self):
         for data in self.ports:
             for device in self.devices:
-                if device['ip'] == data['ip']:
-                    insert_ports(device['device_id'], self.scan_id,
+                if device['ip_address'] == data['ip_address']:
+                    insert_ports(device['id'], self.scan_id,
                                  data['port_number'], data['service_name'], data['protocol'])
 
 # Saving Scan() info itself

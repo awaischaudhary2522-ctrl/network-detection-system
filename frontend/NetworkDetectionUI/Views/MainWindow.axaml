@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NetworkDetectionUI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dg="using:Avalonia.Controls"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="NetworkDetectionUI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="NetworkDetectionUI">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+        to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <TabControl>
+        <TabItem Header="Scan">
+            <StackPanel Spacing="10" Margin="20">
+                <TextBox Text="{Binding IpInput}" Watermark="Enter IP range e.g. 192.168.1.0/24" KeyDown="OnKeyDown"/>
+                <Button Height="40" HorizontalAlignment="Left" Command="{Binding StartScanCommand}">Start Scan</Button>
+                <TextBlock Text="{Binding ScanStatus}"/>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Devices">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="10">
+                    <Button Command="{Binding ShowCurrentScanCommand}">Current Scan</Button>
+                    <Button Command="{Binding ShowAllDevicesCommand}">View All</Button>
+                </StackPanel>
+                <DataGrid ItemsSource="{Binding DisplayedDevices}" AutoGenerateColumns="True" IsReadOnly="True"/>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Ports">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="10">
+                    <Button Command="{Binding ShowCurrentScanPortsCommand}">Current Scan</Button>
+                    <Button Command="{Binding ShowAllPortsCommand}">View All</Button>
+                </StackPanel>
+                <DataGrid ItemsSource="{Binding DisplayedScanPorts}" AutoGenerateColumns="True" IsReadOnly="True"/>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Alerts">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="10">
+                    <Button Command="{Binding ShowCurrentScanAlertsCommand}">Current Scan</Button>
+                    <Button Command="{Binding ShowAllAlertsCommand}">View All</Button>
+                </StackPanel>
+                <DataGrid ItemsSource="{Binding DisplayedAlerts}" AutoGenerateColumns="True" IsReadOnly="True"/>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Logs">
+            <DataGrid ItemsSource="{Binding Logs}" AutoGenerateColumns="True" IsReadOnly="True"/>
+        </TabItem>
+        <TabItem Header="Scans">
+            <DataGrid ItemsSource="{Binding Scans}" AutoGenerateColumns="True" IsReadOnly="True"/>
+        </TabItem>
+
+    </TabControl>
+</Window>
