@@ -1,40 +1,68 @@
 # Network Detection System
 
 ## Overview
-A network monitoring tool that scans your ip address and stores results in a PostgreSQL database.
+A full-stack network monitoring and threat detection tool that scans your local network, detects suspicious activity using rule-based and ML-based detection (Isolation Forest), and displays results in a desktop GUI.
 
 ## Tech Stack
-- Python
-- Flask (API framework)
-- psycopg2 (database library)
+**Backend**
+- Python, Flask, psycopg2, python-nmap, scikit-learn
+
+**Frontend**
+- C#, Avalonia UI, CommunityToolkit.Mvvm
+
+**Database**
 - PostgreSQL
-- nmap
 
 ## Project Structure
+```
 network-detection-system/
 ├── backend/
-│   ├── scanner.py   # Handles the network scan
-│   ├── api.py       # Flask REST API routes
-│   ├── database.py  # All CRUD operations
-│   └── models.py    # In progress
-├── schema.sql       # Database made here
-└── main.py          # In progress
+│   ├── scanner.py    # Network scanning via nmap
+│   ├── api.py        # Flask REST API routes
+│   ├── database.py   # All CRUD + query operations
+│   ├── detector.py   # Rule-based + ML threat detection
+│   └── main.py       # Launcher script
+├── frontend/
+│   └── NetworkDetectionUI/  # C# Avalonia MVVM app
+├── schema.sql        # PostgreSQL schema
+└── README.md
+```
 
 ## API Endpoints
 | Endpoint | Description |
 |----------|-------------|
-| /scan    | Scans it accepts an IP parameter and returns devices + open ports |
-| /devices | Returns the devices name, ip address first and last seen |
-| /ports   | Returns the portname and which ports are open |
-| /alerts  | Returns what threats are there (in progress) |
+| /scan    | Triggers nmap scan, saves results, runs threat detection |
+| /devices | Returns all devices from database |
+| /ports   | Returns all open ports |
+| /alerts  | Returns detected threats and anomalies |
 | /logs    | Returns system logs |
+| /scans   | Returns scan history |
 
 ## How to Run
-1. Install dependencies: pip install flask psycopg2 python-nmap
-2. Create the database and run schema:
-   - createdb network_monitor
-   - psql -U postgres -d network_monitor -f schema.sql
-3. Run: python main.py (Working on it)
+1. Install Python dependencies:
+```
+   pip3 install flask psycopg2 python-nmap scikit-learn numpy
+```
+2. Setup database:
+```
+   createdb network_monitor
+   psql -U postgres -d network_monitor -f schema.sql
+```
+3. Run everything:
+```
+   sudo python3 main.py
+```
+
+## Features
+- Local network scanning with nmap
+- Device and port discovery
+- Rule-based threat detection (FTP, Telnet, SMB, RDP)
+- ML anomaly detection using Isolation Forest
+- Real-time alerts
+- Full desktop GUI with tabbed interface
+- Scan history and logs
 
 ## Status
-🚧 In Progress — backend mostly completed, frontend is under development.
+✅ Backend complete
+✅ Frontend complete  
+✅ Threat detection working
