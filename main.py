@@ -2,7 +2,7 @@ import subprocess
 import os
 
 # start flask
-flask_process = subprocess.Popen(['sudo', 'python3', 'backend/api.py'])
+flask_process = subprocess.Popen(['python3', 'backend/api.py'])
 
 # start avalonia
 subprocess.run(

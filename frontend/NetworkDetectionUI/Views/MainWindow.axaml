@@ -1,70 +1,219 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:NetworkDetectionUI.ViewModels"
+        xmlns:conv="using:NetworkDetectionUI.Converters"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:dg="using:Avalonia.Controls"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="700"
         x:Class="NetworkDetectionUI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="SecureNet">
+        Title="Network Detection System"
+        MinWidth="900" MinHeight="600"
+        Width="1100" Height="700">
+
+    <Window.Resources>
+        <conv:SeverityColorConverter x:Key="SeverityColor"/>
+        <conv:RelativeTimeConverter x:Key="RelativeTime"/>
+        <conv:BoolToResolvedConverter x:Key="BoolToResolved"/>
+        <conv:BoolToStatusTextConverter x:Key="BoolToStatusText"/>
+    </Window.Resources>
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-        to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <TabControl>
-        <TabItem Header="Scan">
-            <StackPanel Spacing="10" Margin="20">
-                <TextBlock Text="🛡️ SecureNet" FontSize="24" FontWeight="Bold" Margin="0,10,0,5"/>                <TextBlock Text="Enter an IP range below to scan your network for devices and threats." Opacity="0.7"/>
-                <TextBox Text="{Binding IpInput}" Watermark="Enter IP range e.g. 192.168.1.0/24" Margin="0,10,0,0"/>
-                <Button Height="40" HorizontalAlignment="Left" Command="{Binding StartScanCommand}" Width="150">Start Scan 🔍</Button>
-                <TextBlock Text="{Binding ScanStatus}" Margin="0,5,0,0"/>
-                <TextBlock Text="🔍 Scan your network | 🛡️ Detect threats | 📊 Monitor devices"
-                           Opacity="0.5"
-                           Margin="0,20,0,0"
-                           FontSize="12"/>
-            </StackPanel>
-        </TabItem>
-        <TabItem Header="Devices">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="10" Margin="10">
-                    <Button Width="120" Margin="0,0,5,0" Command="{Binding ShowCurrentScanCommand}">Current Scan</Button>
-                    <Button Width="120" Command="{Binding ShowAllDevicesCommand}">View All</Button>
-                </StackPanel>
-                <TextBox Text="{Binding DeviceSearch}" Watermark="Search by IP or hostname "/>
-                <DataGrid ItemsSource="{Binding DisplayedDevices}" AutoGenerateColumns="True" IsReadOnly="True"/>
-            </StackPanel>
-        </TabItem>
-        <TabItem Header="Ports">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="10" Margin="10">
-                    <Button Width="120" Margin="0,0,5,0" Command="{Binding ShowCurrentScanPortsCommand}">Current Scan</Button>
-                    <Button Width="120" Command="{Binding ShowAllPortsCommand}">View All</Button>
-                </StackPanel>
-                <TextBox Text="{Binding PortSearch}" Watermark="Search by port or service "/>
-                <DataGrid ItemsSource="{Binding DisplayedScanPorts}" AutoGenerateColumns="True" IsReadOnly="True"/>
-            </StackPanel>
-        </TabItem>
-        <TabItem Header="Alerts">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="10" Margin="10">
-                    <Button Width="120" Margin="0,0,5,0" Command="{Binding ShowCurrentScanAlertsCommand}">Current Scan</Button>
-                    <Button Width="120" Command="{Binding ShowAllAlertsCommand}">View All</Button>
-                </StackPanel>
-                <TextBox Text="{Binding AlertSearch}" Watermark="Search by alert type or IP "/>
-                <DataGrid ItemsSource="{Binding DisplayedAlerts}" AutoGenerateColumns="True" IsReadOnly="True"/>
-            </StackPanel>
-        </TabItem>
-        <TabItem Header="Logs">
-            <DataGrid ItemsSource="{Binding Logs}" AutoGenerateColumns="True" IsReadOnly="True"/>
-        </TabItem>
-        <TabItem Header="Scans">
-            <DataGrid ItemsSource="{Binding Scans}" AutoGenerateColumns="True" IsReadOnly="True"/>
-        </TabItem>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="32"/>
+        </Grid.RowDefinitions>
 
-    </TabControl>
+        <TabControl Grid.Row="0" Margin="0">
+            <TabItem Header="Dashboard">
+                <ScrollViewer>
+                    <StackPanel Spacing="12" Margin="16">
+                        <TextBlock Text="Network Detection System" FontSize="26" FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimary}"/>
+                        <TextBlock Text="Monitor, detect, and respond to network threats"
+                                   Foreground="{StaticResource TextSecondary}" FontSize="14"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <Border Background="{StaticResource CardColor}" CornerRadius="8" Padding="20" Width="200" Margin="0,0,12,0">
+                                <StackPanel>
+                                    <TextBlock Text="Total Devices" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                                    <TextBlock Text="{Binding DeviceCountText}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource TextPrimary}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{StaticResource CardColor}" CornerRadius="8" Padding="20" Width="200" Margin="0,0,12,0">
+                                <StackPanel>
+                                    <TextBlock Text="Open Alerts" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                                    <TextBlock Text="{Binding OpenAlertCountText}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource DangerColor}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{StaticResource CardColor}" CornerRadius="8" Padding="20" Width="200" Margin="0,0,12,0">
+                                <StackPanel>
+                                    <TextBlock Text="Last Scan" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                                    <TextBlock Text="{Binding LastScanText}" FontSize="16" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextPrimary}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="{StaticResource CardColor}" CornerRadius="8" Padding="20" Width="200">
+                                <StackPanel>
+                                    <TextBlock Text="Total Alerts" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TotalAlertCountText}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource WarningColor}"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <Border Background="{StaticResource CardColor}" CornerRadius="8" Padding="16" Margin="0,8,0,0">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="Quick Scan" FontSize="16" FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextPrimary}"/>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBox Text="{Binding IpInput}" Watermark="Enter IP range e.g. 192.168.1.0/24"
+                                             MinWidth="300"/>
+                                    <Button Command="{Binding StartScanCommand}" Width="140">Start Scan</Button>
+                                </StackPanel>
+                                <ProgressBar IsIndeterminate="{Binding IsScanning}" IsVisible="{Binding IsScanning}"
+                                             Height="4" Foreground="{StaticResource PrimaryLight}"/>
+                                <TextBlock Text="{Binding ScanStatus}" Foreground="{StaticResource TextSecondary}"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Scan">
+                <ScrollViewer>
+                    <StackPanel Spacing="12" Margin="16">
+                        <TextBlock Text="Network Scan" FontSize="20" FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimary}"/>
+                        <TextBlock Text="Enter an IP range to scan for devices and threats"
+                                   Foreground="{StaticResource TextSecondary}"/>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBox Text="{Binding IpInput}" Watermark="e.g. 192.168.1.0/24"
+                                     MinWidth="300"/>
+                            <Button Command="{Binding StartScanCommand}" Width="140">Start Scan</Button>
+                            <Button Command="{Binding StartScanCommand}" Width="140">Cancel</Button>
+                        </StackPanel>
+                        <ProgressBar IsIndeterminate="{Binding IsScanning}" IsVisible="{Binding IsScanning}"
+                                     Height="4" Foreground="{StaticResource PrimaryLight}"/>
+                        <TextBlock Text="{Binding ScanStatus}" Foreground="{StaticResource TextSecondary}"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Devices">
+                <Grid RowDefinitions="Auto,Auto,*" Margin="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+                        <Button Command="{Binding ShowCurrentScanCommand}" Width="120">Current Scan</Button>
+                        <Button Command="{Binding ShowAllDevicesCommand}" Width="120">View All</Button>
+                    </StackPanel>
+                    <TextBox Grid.Row="1" Text="{Binding DeviceSearch}" Watermark="Search by IP or hostname"
+                             Margin="0,0,0,8"/>
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding DisplayedDevices}" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="IP" Binding="{Binding IpAddress}" Width="*"/>
+                            <DataGridTextColumn Header="Hostname" Binding="{Binding Hostname}" Width="*"/>
+                            <DataGridTextColumn Header="MAC" Binding="{Binding MacAddress}" Width="*"/>
+                            <DataGridTextColumn Header="First Seen" Binding="{Binding FirstSeen, Converter={StaticResource RelativeTime}}" Width="120"/>
+                            <DataGridTextColumn Header="Last Seen" Binding="{Binding LastSeen, Converter={StaticResource RelativeTime}}" Width="120"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Ports">
+                <Grid RowDefinitions="Auto,Auto,*" Margin="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+                        <Button Command="{Binding ShowCurrentScanPortsCommand}" Width="120">Current Scan</Button>
+                        <Button Command="{Binding ShowAllPortsCommand}" Width="120">View All</Button>
+                    </StackPanel>
+                    <TextBox Grid.Row="1" Text="{Binding PortSearch}" Watermark="Search by port or service"
+                             Margin="0,0,0,8"/>
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding DisplayedScanPorts}" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Port" Binding="{Binding PortNumber}" Width="80"/>
+                            <DataGridTextColumn Header="Service" Binding="{Binding ServiceName}" Width="*"/>
+                            <DataGridTextColumn Header="Protocol" Binding="{Binding Protocol}" Width="80"/>
+                            <DataGridTextColumn Header="Device IP" Binding="{Binding IpAddress}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Alerts">
+                <Grid RowDefinitions="Auto,Auto,*" Margin="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+                        <Button Command="{Binding ShowCurrentScanAlertsCommand}" Width="120">Current Scan</Button>
+                        <Button Command="{Binding ShowAllAlertsCommand}" Width="120">View All</Button>
+                    </StackPanel>
+                    <TextBox Grid.Row="1" Text="{Binding AlertSearch}" Watermark="Search by alert type or IP"
+                             Margin="0,0,0,8"/>
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding DisplayedAlerts}" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Alert" Binding="{Binding AlertType}" Width="*"/>
+                            <DataGridTemplateColumn Header="Severity" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{Binding Severity, Converter={StaticResource SeverityColor}}"
+                                                CornerRadius="4" Padding="8,2" HorizontalAlignment="Center">
+                                            <TextBlock Text="{Binding Severity}" Foreground="White"
+                                                       FontSize="12" FontWeight="SemiBold"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Source IP" Binding="{Binding SourceIp}" Width="140"/>
+                            <DataGridTextColumn Header="Time" Binding="{Binding CreatedAt, Converter={StaticResource RelativeTime}}" Width="120"/>
+                            <DataGridTemplateColumn Header="Status" Width="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{Binding Resolved, Converter={StaticResource BoolToResolved}}"
+                                                CornerRadius="4" Padding="6,2" HorizontalAlignment="Center">
+                                            <TextBlock Text="{Binding Resolved, Converter={StaticResource BoolToStatusText}}"
+                                                       Foreground="White" FontSize="11" FontWeight="SemiBold"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Logs">
+                <DataGrid ItemsSource="{Binding Logs}" IsReadOnly="True" Margin="8">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Event" Binding="{Binding Event}" Width="*"/>
+                        <DataGridTextColumn Header="Time" Binding="{Binding CreatedAt, Converter={StaticResource RelativeTime}}" Width="140"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <TabItem Header="Scans">
+                <DataGrid ItemsSource="{Binding Scans}" IsReadOnly="True" Margin="8">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Subnet" Binding="{Binding SubnetScanned}" Width="*"/>
+                        <DataGridTextColumn Header="Scanned At" Binding="{Binding ScannedAt, Converter={StaticResource RelativeTime}}" Width="140"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+
+        <Border Grid.Row="1" Background="{StaticResource CardColor}" Padding="12,0">
+            <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+                <Ellipse Width="8" Height="8" Fill="{Binding ConnectionStatusColor}"/>
+                <TextBlock Text="{Binding ConnectionStatusText}" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                <Separator Width="1" Height="16" Background="{StaticResource BorderColor}"/>
+                <TextBlock Text="{Binding DeviceCountText}" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+                <Separator Width="1" Height="16" Background="{StaticResource BorderColor}"/>
+                <TextBlock Text="{Binding LastScanText}" Foreground="{StaticResource TextSecondary}" FontSize="12"/>
+            </StackPanel>
+        </Border>
+    </Grid>
 </Window>

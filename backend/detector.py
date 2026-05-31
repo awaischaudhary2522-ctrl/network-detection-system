@@ -1,4 +1,4 @@
-from database import get_ports_by_scan, get_recent_scans, insert_alerts, get_device_ip, get_all_scan_features
+from database import get_ports_by_scan, insert_alerts, get_device_ip, get_all_scan_features
 from datetime import datetime
 from sklearn.ensemble import IsolationForest
 import numpy as np
@@ -44,7 +44,7 @@ class ThreatDetector:
         suspicious_count = sum(
             1 for data in self.ports if data[3] in self.dan_ports)
         all_features = get_all_scan_features()
-        current_features = [device_count, port_count,
+        current_features = [port_count, device_count,
                             suspicious_count]
         training_data = np.array([[row[1], row[2], row[3]]
                                  for row in all_features])

@@ -14,22 +14,26 @@ class NetworkScanner:
 
 # To Scan the IP's that are given to us
 
-    def scan(self, ports='1-8000'):
+    def scan(self, ports='21,22,23,25,53,80,110,143,443,445,993,995,1433,1521,2049,3306,3389,5432,5900,8080,8443'):
         nm = nmap.PortScanner()
         result = nm.scan(self.IP, ports)
 
+        if 'scan' not in result:
+            return self.devices, self.ports
+
         for host in result['scan']:
-            ip = result['scan'][host]['addresses']['ipv4']
-            hostname = result['scan'][host]['hostnames'][0]['name']
+            host_data = result['scan'][host]
+            if 'addresses' not in host_data or 'ipv4' not in host_data['addresses']:
+                continue
+            ip = host_data['addresses']['ipv4']
+            hostname = host_data['hostnames'][0]['name'] if host_data['hostnames'] else ''
             now = datetime.now()
-            first_seen = now
-            last_seen = now
             self.devices.append({'ip_address': ip, 'hostname': hostname,
                                 'first_seen': str(now), 'last_seen': str(now)})
 
-            if 'tcp' in result['scan'][host]:
-                for port in result['scan'][host]['tcp']:
-                    portname = result['scan'][host]['tcp'][port]['name']
+            if 'tcp' in host_data:
+                for port in host_data['tcp']:
+                    portname = host_data['tcp'][port]['name']
                     protocol = 'tcp'
                     self.ports.append(
                         {'ip_address': ip, 'port_number': port, 'service_name': portname, 'protocol': protocol})
